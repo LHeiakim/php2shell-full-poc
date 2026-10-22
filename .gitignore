@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+*.bin
+*.resp
+
+# runtime proof files
+lab/out/*
+!lab/out/.gitkeep

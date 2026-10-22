@@ -1,0 +1,23 @@
+# Vulnerable lab target for the php2shell PoC.
+#
+# Official php:8.4.26-apache image, untouched php.ini-production
+# (display_errors=Off, memory_limit=128M, post_max_size=8M), single
+# prefork worker so the A/B request pairs always hit the same child.
+#
+# Override port/name with P2S_PORT / P2S_NAME, e.g.:
+#   P2S_PORT=18111 P2S_NAME=php2shell-lab2 docker compose up -d
+
+services:
+  target:
+    image: php:8.4.26-apache
+    container_name: ${P2S_NAME:-p2s-pure-18110}
+    ports:
+      - "127.0.0.1:${P2S_PORT:-18110}:80"
+    volumes:
+      - ./apache.conf:/etc/apache2/conf-enabled/zz-p2s.conf:ro
+      - ./www:/var/www/html:ro
+      - ./out:/out
+    command: >
+      /bin/sh -c "cp /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini;
+      chown -R www-data:www-data /out 2>/dev/null || true;
+      exec apache2-foreground"
